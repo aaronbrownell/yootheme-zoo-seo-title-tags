@@ -161,7 +161,35 @@ class DefaultController extends AppController {
 		// update hit count
 		$this->item->hit();
 
-		$title = $page_title;
+		// get browser title, if exists
+		if ($this->item->application_id == 1 && $this->item->type == "article") {					
+			function getZooElementData($item_id, $element_identifier, $element_child) {
+			  $db =& JFactory::getDBO();
+			  $query = "SELECT elements FROM jos_zoo_item WHERE id = " . $item_id;
+			  $db->setQuery($query);
+			  $element_xml = $db->loadResult();
+			  $elements = simplexml_load_string($element_xml);
+			  foreach ($elements->children() as $element) {
+			    if((string)$element->attributes() == $element_identifier) {
+			      return (string)$element->$element_child;
+			    }
+			  }
+			}
+			//Custom Field Id for 'Browser Title Tag'. Located in mysql table "jos_zoo_item" - Unique to "article" (or whatever you call your zoo instance)
+			$title = getZooElementData($this->item->id, 'f89d78b8-daa7-4983-be3b-1bd83a29ce5c', 'value');	
+			if ($title == ''){
+				$title = $this->item->name;
+			}
+		//if browser title is blank return page title
+		} else {				
+			$title = $this->item->name;
+		}
+
+		if ($menu = JSite::getMenu()->getActive()) {
+			if ($page_title = $this->app->parameter->create($menu->params)->get('page_title')) {
+				$title = $page_title;
+			}
+		}
 
 	 	// set metadata
 		$this->app->document->setTitle($title);

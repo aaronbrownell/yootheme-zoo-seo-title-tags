@@ -3,6 +3,7 @@
 	<positions layout="full">
 		<position name="top">Top</position>
 		<position name="title">Title</position>
+		<position name="browsertitle">Browser Title</position>
 		<position name="subtitle">Subtitle</position>
 		<position name="meta">Meta</position>
 		<position name="media">Media</position>
